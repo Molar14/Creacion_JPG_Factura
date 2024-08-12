@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef } from 'react';
+import * as htmlToImage from 'html-to-image';  // Importar todo como htmlToImage
+import download from 'downloadjs';
+import Factura from './Factura';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const facturaRef = useRef(null);
+
+    const handleDownload = () => {
+        if (facturaRef.current === null) {
+            return;
+        }
+
+        htmlToImage.toJpeg(facturaRef.current, { quality: 0.95 })
+            .then((dataUrl) => {
+                download(dataUrl, 'factura.jpg');
+            })
+            .catch((err) => {
+                console.error('Error al generar la imagen:', err);
+            });
+    };
+
+    return (
+        <div>
+            <Factura ref={facturaRef} />
+            <button onClick={handleDownload}>Descargar como JPG</button>
+        </div>
+    );
 }
 
 export default App;
